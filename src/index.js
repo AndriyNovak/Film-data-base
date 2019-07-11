@@ -109,6 +109,7 @@ class App extends React.Component {
     requestGetInformFilm(pass){        
         var req = new XMLHttpRequest();
             req.open('GET', pass, false); 
+            req.setRequestHeader('Access-Control-Allow-Origin', 'https://github.com');
             req.onreadystatechange = function() {
             if (req.readyState == 4) {
                 if(req.status == 200) {                   
