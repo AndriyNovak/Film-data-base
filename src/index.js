@@ -33,9 +33,8 @@ class App extends React.Component {
         }
     }
     handlerOnChangeLoad(event){
-        this.setState({
-            // urlFile:event.target.files[0].name    // альтернативний шлях до файлу для завантаження з компютера
-            urlFile: `https://github.com/AndriyNovak/Film-data-base/blob/master/${event.target.files[0].name}` // шлях до файлу через github repositories
+        this.setState({            
+            urlFile:event.target.files[0].name 
         })
     }
     handleSubmit(event){
@@ -44,6 +43,7 @@ class App extends React.Component {
         if(responseText!=""){
             this.convertText(responseText)
         }  
+      
     }
     convertText(responseText){
         let arrText;       
@@ -112,7 +112,7 @@ class App extends React.Component {
             req.onreadystatechange = function() {
             if (req.readyState == 4) {
                 if(req.status == 200) {                   
-                    responseText = req.responseText                                
+                    responseText = req.responseText
                     return responseText                 
                 }
             }
@@ -181,22 +181,21 @@ class App extends React.Component {
             }); 
         }
     }
-    addNewParam(){ 
-        let counter = 1
-        let id = this.state.arrObject.length+1001 ;              
-        this.state.arrObject.map((el,j)=>{                   
-            if(el.id == id){
-                counter = counter+1;
-                    id = id + counter;                        
-            }  
+    addNewParam(){         
+        let arrMax = []            
+        this.state.arrObject.map((el,j)=>{ 
+            arrMax.push(Number(el.id))
         })
+        console.log(Math.max(...arrMax))
+        console.log(arrMax)
+        let idMax = Math.max(...arrMax);
         if(this.state.newTitle && this.state.newReleaseYear && 
             this.state.newFormat && 
              this.state.newSatrs  ){
                this.setState({                    
                     arrObject:[
                         {
-                            "id":id,
+                            "id":idMax+1,
                             "title":[this.state.newTitle],
                             "releaseYear":[this.state.newReleaseYear],
                             "format":[this.state.newFormat],
@@ -213,7 +212,8 @@ class App extends React.Component {
            }  
     }
     removeFilm(arrObject,index){         
-        arrObject.splice(index,1);
+        arrObject.splice(index,1);   
+        
         localStorage.setItem('arrObject', JSON.stringify(arrObject));       
         if(arrObject!==[]){
             let json = localStorage.getItem('arrObject')
