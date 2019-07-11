@@ -34,8 +34,8 @@ class App extends React.Component {
     }
     handlerOnChangeLoad(event){
         this.setState({
-            // urlFile:event.target.files[0].name    // альтернативний шлях до файлу для завантаження з компютера
-            urlFile: `https://github.com/AndriyNovak/Film-data-base/blob/master/${event.target.files[0].name}` // шлях до файлу через github repositories
+            urlFile:event.target.files[0].name    // альтернативний шлях до файлу для завантаження з компютера
+            // urlFile: `https://github.com/AndriyNovak/Film-data-base/blob/master/${event.target.files[0].name}` // шлях до файлу через github repositories
         })
     }
     handleSubmit(event){
@@ -109,7 +109,7 @@ class App extends React.Component {
     requestGetInformFilm(pass){        
         var req = new XMLHttpRequest();
             req.open('GET', pass, false); 
-            req.setRequestHeader('Access-Control-Allow-Origin', 'https://github.com');
+            // req.setRequestHeader('Access-Control-Allow-Origin', 'https://github.com');
             req.onreadystatechange = function() {
             if (req.readyState == 4) {
                 if(req.status == 200) {                   
