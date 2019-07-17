@@ -1,3 +1,8 @@
+/*
+Называй нормально коммиты. В назавании пиши что ты сделал
+в коммите.
+Что за файл "~$кументація.docx"? В проекте должен быть только английский язык
+*/
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
@@ -8,24 +13,24 @@ import {AddNewFilm} from './components/AddNewFilm';
 let responseText="";
 
 class App extends React.Component {
-    constructor(state,props){       
-        super(state,props); 
-        this.state = {           
+    constructor(state,props){
+        super(state,props);
+        this.state = {
             urlFile:"noURL",
-            responseText:[],            
-            arrObject:[],           
-            inpSearchValue:"",           
+            responseText:[],
+            arrObject:[],
+            inpSearchValue:"",
             indexSearch:"",
             arrIndexSearch:[],
             newTitle:"",
             newReleaseYear:"",
             newFormat:"",
-            newSatrs:"",            
-                   
+            newSatrs:"",
+
         }
     }
     componentWillMount(){
-        if(this.state.arrObject!==[]){
+        if(this.state.arrObject!==[]){ //?
             let json = localStorage.getItem('arrObject')
             this.setState({
                 arrObject:JSON.parse(json)
@@ -33,46 +38,49 @@ class App extends React.Component {
         }
     }
     handlerOnChangeLoad(event){
-        this.setState({            
-            urlFile:event.target.files[0].name 
+        this.setState({
+            urlFile:event.target.files[0].name // в стейт записываются только данные которые отрисовываются на странице или влияют на отрисовку
         })
     }
     handleSubmit(event){
-        event.preventDefault();        
-        this.requestGetInformFilm(this.state.urlFile)        
-        if(responseText!=""){
+        event.preventDefault();
+        this.requestGetInformFilm(this.state.urlFile)
+        if(responseText!=""){ // используй всегда ===
             this.convertText(responseText)
-        }  
-      
+        }
+
     }
-    convertText(responseText){
-        let arrText;       
-        for(let i = 0;i<responseText.length;i++){ 
-            arrText = responseText.split("\n");                            
-        }  
-        for(let i = 0;i<responseText.length;i++){ 
-            if(arrText.indexOf("")!==-1){
+    convertText(responseText){ // функции для конвертирования текста вынести в отдельный файл
+        let arrText;
+        for(let i = 0;i<responseText.length;i++){ // зачем тут цикл?
+            arrText = responseText.split("\n");
+        }
+        for(let i = 0;i<responseText.length;i++){ // зачем тут цикл?
+            if(arrText.indexOf("")!==-1){ //зачем?
                 arrText.splice(arrText.indexOf(""),1)
-            }            
-        }           
-        let title = this.parsingFunction(0,4,arrText) ; 
+            }
+        }
+        // ты должен понмать зачем нужна КАЖДАЯ строчка твоего кода, например верхний фор ничего не делает
+
+        // лучше сплитить весь текст по "\n\n", каждый элемент будет отвечать фильму, потом парсишь эти элементы
+        let title = this.parsingFunction(0,4,arrText) ;
         let releaseYear = this.parsingFunction(1,4,arrText) ;
         let format = this.parsingFunction(2,4,arrText) ;
         let stars = this.parsingFunction(3,4,arrText) ;
         let arrObj =[];
-        this.decomposeElementArr(title).map((elem1,i1)=>{                               
+        this.decomposeElementArr(title).map((elem1,i1)=>{
             arrObj.push({
                 "id":i1+1000,
                 "title":elem1,
                 "releaseYear":this.decomposeElementArr(releaseYear)[i1],
                 "format": this.decomposeElementArr(format)[i1],
                 "stars":this.decomposeElementArr(stars)[i1]
-            })            
+            })
         })
-        this.sortFunc(arrObj);        
+        this.sortFunc(arrObj); // сорт возвращает массив
         let arrFirstElem = arrObj[0].title[0].concat(arrObj[0].title[1]);
         arrObj[0].title = arrObj[0].title.splice(1,1);
-        arrObj[0].title[0] = arrFirstElem;       
+        arrObj[0].title[0] = arrFirstElem;
         this.setState({
             arrObject:arrObj
         })
@@ -80,49 +88,49 @@ class App extends React.Component {
     sortFunc(arrObject){
         arrObject.sort(function(a, b){
             var nameA=a.title, nameB=b.title
-            if (nameA < nameB) 
+            if (nameA < nameB)
               return -1
             if (nameA > nameB)
               return 1
-            return 0 
-        })   
+            return 0
+        })
         return arrObject
     }
-    parsingFunction(startCount,count,arrText){       
-        let arrParam = [];       
-        for(let i = startCount;i<arrText.length;i+=count){ 
-            arrParam.push(arrText[i]);                
-        }       
+    parsingFunction(startCount,count,arrText){
+        let arrParam = [];
+        for(let i = startCount;i<arrText.length;i+=count){
+            arrParam.push(arrText[i]);
+        }
         return arrParam
     }
     decomposeElementArr(array){
         let arr= [];
         for(let j=0;j<array.length;j++){
-            arr.push(array[j].split(":"));            
+            arr.push(array[j].split(":"));
         }
         arr.map((el,i)=>{
             el.splice(0,1)
-        })       
+        })
         return arr
     }
-    
-    requestGetInformFilm(pass){        
+
+    requestGetInformFilm(pass){ // погугли как считывать файл, возможно не нужно делать реквест
         var req = new XMLHttpRequest();
-            req.open('GET', pass, false);           
+            req.open('GET', pass, false);
             req.onreadystatechange = function() {
             if (req.readyState == 4) {
-                if(req.status == 200) {                   
+                if(req.status == 200) {
                     responseText = req.responseText
-                    return responseText                 
+                    return responseText
                 }
             }
             };
-             req.send(null); 
+             req.send(null);
     }
-  // --------------------for Search------------------------  
+  // --------------------for Search------------------------
     handlerOnChangeSearch(event){
         let indexArrTitle = [];
-        let indexArrStars = [];       
+        let indexArrStars = [];
         this.state.arrObject.map((elem1,i1)=>{
             if( (elem1.title[0]).toLowerCase().indexOf((event.target.value).toLowerCase())!==-1){
                 indexArrTitle.push(i1)
@@ -139,7 +147,7 @@ class App extends React.Component {
                     })
                 }
             }
-            
+
             if( (elem1.stars[0].toLowerCase().indexOf((event.target.value).toLowerCase())!==-1)){
                 indexArrStars.push(i1)
                 this.setState({
@@ -155,44 +163,44 @@ class App extends React.Component {
                     })
                 }
             }
-           
+
         })
     }
     // --------------------for Add New Film------------------------
-    handlerOnChangeNewFilm(event,propertyName){ 
+    handlerOnChangeNewFilm(event,propertyName){
         if(propertyName==="title"){
-            this.setState({ 
-                newTitle: event.target.value                                  
-            }); 
+            this.setState({
+                newTitle: event.target.value
+            });
         }
         if(propertyName==="releaseYear"){
-            this.setState({ 
-                newReleaseYear: event.target.value                    
-            }); 
+            this.setState({
+                newReleaseYear: event.target.value
+            });
         }
         if(propertyName==="format"){
-            this.setState({ 
-                newFormat: event.target.value                    
+            this.setState({
+                newFormat: event.target.value
             });
         }
         if(propertyName==="stars"){
-            this.setState({ 
-                newSatrs: event.target.value                    
-            }); 
+            this.setState({
+                newSatrs: event.target.value
+            });
         }
     }
-    addNewParam(){         
-        let arrMax = []            
-        this.state.arrObject.map((el,j)=>{ 
+    addNewParam(){
+        let arrMax = []
+        this.state.arrObject.map((el,j)=>{
             arrMax.push(Number(el.id))
         })
         console.log(Math.max(...arrMax))
         console.log(arrMax)
         let idMax = Math.max(...arrMax);
-        if(this.state.newTitle && this.state.newReleaseYear && 
-            this.state.newFormat && 
+        if(this.state.newTitle && this.state.newReleaseYear &&
+            this.state.newFormat &&
              this.state.newSatrs  ){
-               this.setState({                    
+               this.setState({
                     arrObject:[
                         {
                             "id":idMax+1,
@@ -206,15 +214,15 @@ class App extends React.Component {
                     newTitle:"",
                     newReleaseYear:"",
                     newFormat:"",
-                    newSatrs:""                   
-               }); 
-              
-           }  
+                    newSatrs:""
+               });
+
+           }
     }
-    removeFilm(arrObject,index){         
-        arrObject.splice(index,1);   
-        
-        localStorage.setItem('arrObject', JSON.stringify(arrObject));       
+    removeFilm(arrObject,index){
+        arrObject.splice(index,1);
+
+        localStorage.setItem('arrObject', JSON.stringify(arrObject));
         if(arrObject!==[]){
             let json = localStorage.getItem('arrObject')
             this.setState({
@@ -227,16 +235,16 @@ class App extends React.Component {
         return (
             <div className="main-wrap" >
                 <header>
-                    <form className="form-load-info"> 
-                        <input  type="file"  onChange={()=>this.handlerOnChangeLoad(event)}/> 
+                    <form className="form-load-info">
+                        <input  type="file"  onChange={()=>this.handlerOnChangeLoad(event)}/>
                         <button  className="btn btn-primary" onClick={()=>this.handleSubmit(event)}>Загрузить</button>
-                        
+
                     </form>
 
                     <AddNewFilm
-                    handlerOnChangeNewFilm={this.handlerOnChangeNewFilm.bind(this)}                
+                    handlerOnChangeNewFilm={this.handlerOnChangeNewFilm.bind(this)}
                     arrObject={this.state.arrObject}
-                    addNewParam={this.addNewParam.bind(this)}                   
+                    addNewParam={this.addNewParam.bind(this)}
                     newTitle={this.state.newTitle}
                     newReleaseYear={this.state.newReleaseYear}
                     newFormat={this.state.newFormat}
@@ -245,24 +253,24 @@ class App extends React.Component {
                 />
                     <form className="form-search">
                         <input className="alert alert-primary search" onChange={()=>this.handlerOnChangeSearch(event)}  type="text" placeholder="Название фильма или имя актера"></input>
-                       
+
                     </form>
-                   
+
 
                 </header>
-                <ShowInformFilm                   
+                <ShowInformFilm
                     arrObject={this.state.arrObject}
-                    inpSearchValue={this.state.inpSearchValue}                  
+                    inpSearchValue={this.state.inpSearchValue}
                     indexSearch={this.state.indexSearch}
-                    arrIndexSearch={this.state.arrIndexSearch}                  
+                    arrIndexSearch={this.state.arrIndexSearch}
                     removeFilm={this.removeFilm.bind(this)}
                 />
-                
+
             </div>
-            
-           
+
+
         )
-      
+
     }
 }
 
